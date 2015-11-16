@@ -2,19 +2,20 @@ import pickle
 import numpy as np
 from collections import Counter
 from copy import deepcopy
+import re
 
-totalSteps = 10
-eng_dict = pickle.load("englishDict.dict")
-french_dict = pickle.load("frenchDict.dict")
+totalSteps = 2
+eng_dict = pickle.load(open("../englishDict.dict",'r'))
+french_dict = pickle.load(open("../frenchDict.dict",'r'))
 eng_sent = [];
 french_sent = [];
-with open("../CleanedFrench.txt", "r") as fp:
+with open("../CleanedFrench1000.txt", "r") as fp:
 	for x in fp:
 		xTemp = re.sub('[\n]', '', x)
         words = xTemp.split()
         french_sent.append(words)
         	
-with open("../CleanedEnglish.txt", "r") as fp:
+with open("../CleanedEnglish1000.txt", "r") as fp:
 	for x in fp:
 		xTemp = re.sub('[\n]', '', x)
         words = xTemp.split()
@@ -30,14 +31,18 @@ for step in range(totalSteps):
 	for i in range(len(eng_sent)):
 		unique_eng = Counter(eng_sent[i])
 		unique_french = Counter(french_sent[i])
-		sum_norm = [0]*len(unique_french);
-		
-		for k in range(len(unique_french)):
-		    for j in range(len(unique_eng)):
-		        sum_norm[k]+=translation_matrix[unique_eng[j][0]][unique_french[k][0]];    
-		for j in range(len(unique_eng)):
-		    for k in range(len(unique_french)):
-		        count_matrix[eng_dict[eng_sent[i][j]]][french_dict[french_sent[i][k]]]+=((unique_eng[j][1]*unique_french[k][1])*(translation_matrix[eng_dict[eng_sent[i][j]]][french_dict[french_sent[i][k]]]/sum_norm[k]))
+		sum_norm = {};
+	        
+                for k in unique_french:
+                    sum_norm[k] = 0
+
+		for k in unique_french:
+		    for j in unique_eng:
+		        sum_norm[k]+=translation_matrix[eng_dict[j]][french_dict[k]]*unique_eng[j];
+
+		for j in unique_eng:
+		    for k in unique_french:
+		        count_matrix[eng_dict[j]][french_dict[k]]+=((unique_eng[j]*unique_french[k])*translation_matrix[eng_dict[j]][french_dict[k]]/sum_norm[k])
 
 			    
 	# Updating t
@@ -51,10 +56,11 @@ for step in range(totalSteps):
 	#    		if englishWord in eng_sent[index] and frenchWord in french_sent[index]:
 			temp += count_matrix[eng_dict[englishWord]][french_dict[frenchWord]]
 		lambda_norm[eng_dict[englishWord]] = temp
+                print temp
 		for frenchWord in french_dict:
 			translation_matrix[eng_dict[englishWord]][french_dict[frenchWord]] = (count_matrix[eng_dict[englishWord]][french_dict[frenchWord]])/temp
 
-with open("translationMatrix.txt", "w") as fp:
+with open("../translationMatrix.txt", "w") as fp:
 	for i in range(len(translation_matrix)):
 		for j in range(len(translation_matrix[i])):
 			print >> fp, translation_matrix[i][j],
