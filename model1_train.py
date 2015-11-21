@@ -4,34 +4,58 @@ from collections import Counter
 from copy import deepcopy
 import re
 import pdb
+import matplotlib.pyplot as plt
+import numpy.random as nrand
 
-totalSteps = 2
+print('*************** Training IBM Model 1 ***************')
+totalSteps = 20
 eng_dict = pickle.load(open("../englishDict.dict",'r'))
 french_dict = pickle.load(open("../frenchDict.dict",'r'))
 eng_sent = [];
 french_sent = [];
+
+lengthsFr = [];
+lengthsEn = [];
+
 with open("../CleanedFrench10000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
             french_sent.append(words)
-        	
+            lengthsFr.append(len(words))
+
 with open("../CleanedEnglish10000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
             eng_sent.append(words)
-
+            lengthsEn.append(len(words))
+    
 #count_matrix = np.zeros((len(eng_dict),len(french_dict)))*(1.0/(len(eng_dict)*len(french_dict)));
+
 translation_matrix = np.ones((len(eng_dict),len(french_dict)))*(1.0/(len(eng_dict)*len(french_dict)));
 lambda_norm = np.zeros((len(eng_dict)))
 
 count_matrix = {}
+plt.plot(lengthsEn, lengthsFr, 'ro')
+fit = np.polyfit(lengthsEn, lengthsFr, 1)
+lengthsPred = []
+for i in lengthsEn:
+    lengthsPred.append(int(np.random.normal(i*fit[0],5)))
 
+plt.plot(lengthsEn, lengthsPred, 'g.')
+plt.show()
 
+with open('../FitParams.txt', 'wb') as fp:
+    fp.write(str(fit[0]))
+    fp.write('\n')
+    fp.write('5')
+
+print(' =====> Obtained the length distribution')
 
 for step in range(totalSteps):
 	# Updating counts 
+        print '=====> Iteration %d started'%(step)
 
 	for i in range(len(eng_sent)):
                 #pdb.set_trace()
@@ -72,10 +96,12 @@ for step in range(totalSteps):
                             continue
         		translation_matrix[eng_dict[englishWord]][french_dict[frenchWord]] = (count_matrix[englishWord][frenchWord])/temp
 
-               
+
+print('=====> Finished training, saving data')
 with open("../translationMatrix.txt", "w") as fp:
 	for i in range(len(translation_matrix)):
 		for j in range(len(translation_matrix[i])):
 			print >> fp, translation_matrix[i][j],
 		print >> fp
 
+print('=====> Saved data. Have a nice day!')
