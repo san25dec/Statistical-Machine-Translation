@@ -16,7 +16,7 @@ def trigram(infile, outfile):
 		count[key] += 1
 	for i in triprob:
 		for j in triprob[i]:
-			triprob[i][j] = triprob[i][j] / count[i]
+			triprob[i][j] = (1.0*triprob[i][j]) / count[i]
 	with open(outfile, 'wb') as f:
 		pickle.dump(triprob, f)
 	# print triprob
@@ -38,7 +38,7 @@ def bigram(infile, outfile):
 		count[key] += 1
 	for i in biprob:
 		for j in biprob[i]:
-			biprob[i][j] = biprob[i][j] / count[i]
+			biprob[i][j] = (1.0*biprob[i][j]) / count[i]
 	with open(outfile, 'wb') as f:
 		pickle.dump(biprob, f)
 	# print biprob
