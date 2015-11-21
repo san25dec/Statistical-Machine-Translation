@@ -6,7 +6,7 @@ englishSet = set()
 frenchDict = {}
 englishDict = {}
 
-with open('../CleanedFrench10000.txt', 'r') as rFr:
+with open('../CleanedFrench1000.txt', 'r') as rFr:
     for x in rFr:
         xTemp = re.sub('[\n]', '', x)
         words = xTemp.split()
@@ -14,7 +14,7 @@ with open('../CleanedFrench10000.txt', 'r') as rFr:
         for word in words:
             frenchSet.add(word)
         
-with open('../CleanedEnglish10000.txt', 'r') as rEn:
+with open('../CleanedEnglish1000.txt', 'r') as rEn:
     for x in rEn:
         xTemp = re.sub('[\n]', '', x)
         words = xTemp.split()

@@ -1,6 +1,6 @@
 import ngram as ng
 
-ng.trigram("../CleanedEnglish10000.txt", "../trigramEnglish10000.dict")
-ng.bigram("../CleanedEnglish10000.txt", "../bigramEnglish10000.dict")
-ng.unigram("../CleanedEnglish10000.txt", "../unigramEnglish10000.dict")
+ng.trigram("../CleanedEnglish1000.txt", "../trigramEnglish1000.dict")
+ng.bigram("../CleanedEnglish1000.txt", "../bigramEnglish1000.dict")
+ng.unigram("../CleanedEnglish1000.txt", "../unigramEnglish1000.dict")
 

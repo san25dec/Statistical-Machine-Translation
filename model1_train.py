@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy.random as nrand
 
 print('*************** Training IBM Model 1 ***************')
-totalSteps = 20
+totalSteps = 10
 eng_dict = pickle.load(open("../englishDict.dict",'r'))
 french_dict = pickle.load(open("../frenchDict.dict",'r'))
 eng_sent = [];
@@ -17,14 +17,14 @@ french_sent = [];
 lengthsFr = [];
 lengthsEn = [];
 
-with open("../CleanedFrench10000.txt", "r") as fp:
+with open("../CleanedFrench1000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
             french_sent.append(words)
             lengthsFr.append(len(words))
 
-with open("../CleanedEnglish10000.txt", "r") as fp:
+with open("../CleanedEnglish1000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
