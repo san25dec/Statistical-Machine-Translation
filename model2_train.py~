@@ -6,6 +6,7 @@ import re
 import pdb
 import matplotlib.pyplot as plt
 import numpy.random as nrand
+import model2_helpers
 
 print('*************** Training IBM Model 1 ***************')
 totalSteps = 10
@@ -28,26 +29,39 @@ with open("../CleanedEnglish1000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
-            words.append('xxnullxx')
             eng_sent.append(words)
             lengthsEn.append(len(words))
     
 #count_matrix = np.zeros((len(eng_dict),len(french_dict)))*(1.0/(len(eng_dict)*len(french_dict)));
 
 translation_matrix = np.ones((len(eng_dict),len(french_dict)))*(1.0/(len(eng_dict)*len(french_dict)));
+alignment_matrix = {}
+
+for i in range(8):
+    for j in range(8):
+
+        if i < 7 and j < 7:
+            alignment_matrix[(i,j)] = np.ones(((i+1)*5,(j+1)*5))*0.01
+        elif i < 7 and j == 7:
+            alignment_matrix[(i,j)] = np.ones(((i+1)*5,50))*0.01
+        elif i == 7 and j < 7:
+            alignment_matrix[(i,j)] = np.ones((50, (i+1)*5))*0.01
+        else:
+            alignment_matrix[(i,j)] = np.ones((50,50))*0.01
+            
 lambda_norm = np.zeros((len(eng_dict)))
 count_matrix = np.zeros((len(eng_dict),len(french_dict)))
 
-plt.plot(lengthsEn, lengthsFr, 'ro')
+#plt.plot(lengthsEn, lengthsFr, 'ro')
 fit = np.polyfit(lengthsEn, lengthsFr, 1)
 lengthsPred = []
 for i in lengthsEn:
     lengthsPred.append(int(np.random.normal(i*fit[0],5)))
 
-plt.plot(lengthsEn, lengthsPred, 'g.')
-plt.show()
+#plt.plot(lengthsEn, lengthsPred, 'g.')
+#plt.show()
 
-with open('../FitParams.txt', 'wb') as fp:
+with open('../FitParams2.txt', 'wb') as fp:
     fp.write(str(fit[0]))
     fp.write('\n')
     fp.write('5')
@@ -55,28 +69,22 @@ with open('../FitParams.txt', 'wb') as fp:
 print(' =====> Obtained the length distribution')
 
 for step in range(totalSteps):
-	# Updating counts 
-        print '=====> Iteration %d started'%(step)
 
+	print '=====> Iteration %d started'%(step)	
+	# Updating counts 
+        
 	for i in range(len(eng_sent)):
                 #pdb.set_trace()
-		unique_eng = Counter(eng_sent[i])
-		unique_french = Counter(french_sent[i])
-		sum_norm = {};
-	        
-                for k in unique_french:
-                    sum_norm[k] = 0
+		eng_words = eng_sent[i]
+		french_words = french_sent[i]
 
-		for k in unique_french:
-		    for j in unique_eng:
-		        sum_norm[k]+=translation_matrix[eng_dict[j]][french_dict[k]]*unique_eng[j];
-
-		for j in unique_eng:
-		    for k in unique_french:
-		        count_matrix[eng_dict[j]][french_dict[k]]+=((unique_eng[j]*unique_french[k])*translation_matrix[eng_dict[j]][french_dict[k]]/sum_norm[k])
+		for e in eng_words:
+		    for f in french_words:
+		    	count_matrix[eng_dict[e]][french_dict[f]] += c_of_f_given_e(e, f, eng_words, french_words, eng_dict, french_dict, alignment_matrix, translation_matrix)
+        
 	# Updating t
 
-        for englishWord in eng_dict:
+    for englishWord in eng_dict:
 		temp = 0
 		for frenchWord in french_dict:
 	#    	for index in range(len(eng_sent)):
@@ -90,7 +98,7 @@ for step in range(totalSteps):
 
 
 print('=====> Finished training, saving data')
-with open("../translationMatrix.txt", "w") as fp:
+with open("../translationMatrix2.txt", "w") as fp:
 	for i in range(len(translation_matrix)):
 		for j in range(len(translation_matrix[i])):
 			print >> fp, translation_matrix[i][j],

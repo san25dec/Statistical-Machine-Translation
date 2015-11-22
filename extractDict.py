@@ -6,7 +6,7 @@ englishSet = set()
 frenchDict = {}
 englishDict = {}
 
-with open('../CleanedFrench1000.txt', 'r') as rFr:
+with open('../CleanedFrench10.txt', 'r') as rFr:
     for x in rFr:
         xTemp = re.sub('[\n]', '', x)
         words = xTemp.split()
@@ -14,7 +14,7 @@ with open('../CleanedFrench1000.txt', 'r') as rFr:
         for word in words:
             frenchSet.add(word)
         
-with open('../CleanedEnglish1000.txt', 'r') as rEn:
+with open('../CleanedEnglish10.txt', 'r') as rEn:
     for x in rEn:
         xTemp = re.sub('[\n]', '', x)
         words = xTemp.split()
@@ -32,7 +32,10 @@ for word in englishSet:
     englishDict[word] = j
     j += 1
 
+#Adding the null to the dictionary
+#englishDict['xxnullxx'] = j
+
 print(len(englishSet))
-pickle.dump(frenchDict, open('../frenchDict.dict', 'wb'))
-pickle.dump(englishDict, open('../englishDict.dict', 'wb'))
+pickle.dump(frenchDict, open('../frenchDict10.dict', 'wb'))
+pickle.dump(englishDict, open('../englishDict10.dict', 'wb'))
 

@@ -121,14 +121,6 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
     print('** Max prob :')
     print(maxprob)
     return {'translation':translated_sent, 'probability':maxprob} 
-    
-    
-    
-    
-    
-    
-
-
 
 with open('../CleanedEnglish1000.txt', 'r') as fp1:
     with open('../CleanedFrench1000.txt', 'r') as fp2:
