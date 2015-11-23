@@ -8,46 +8,56 @@ import matplotlib.pyplot as plt
 import numpy.random as nrand
 import model2_helpers as hp
 
-print('*************** Training IBM Model 1 ***************')
+print('*************** Training IBM Model 2 ***************')
 totalSteps = 10
-eng_dict = pickle.load(open("../englishDict10.dict",'r'))
-french_dict = pickle.load(open("../frenchDict10.dict",'r'))
+eng_dict = pickle.load(open("../englishDict100.dict",'r'))
+french_dict = pickle.load(open("../frenchDict100.dict",'r'))
 eng_sent = [];
 french_sent = [];
 
 lengthsFr = [];
 lengthsEn = [];
 
-with open("../CleanedFrench10.txt", "r") as fp:
+with open("../CleanedFrench100.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
             french_sent.append(words)
             lengthsFr.append(len(words))
 
-with open("../CleanedEnglish10.txt", "r") as fp:
+with open("../CleanedEnglish100.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
             eng_sent.append(words)
             lengthsEn.append(len(words))
-    
+'''
+eng_sent_new = []
+french_sent_new = []
+for i in range(len(eng_sent)):
+    if len(eng_sent[i]) <= 80 and len(french_sent[i]) <= 80:
+        eng_sent_new.append(eng_sent[i])
+        french_sent_new.append(french_sent[i])
+
+eng_sent = eng_sent_new
+french_sent = french_sent_new
+''' and 0
 #count_matrix = np.zeros((len(eng_dict),len(french_dict)))*(1.0/(len(eng_dict)*len(french_dict)));
 
 translation_matrix = np.ones((len(eng_dict),len(french_dict)))*(1.0/(len(eng_dict)*len(french_dict)));
 alignment_matrix = {}
 
-for i in range(8):
-    for j in range(8):
+for i in range(12):
+    for j in range(12):
 
-        if i < 7 and j < 7:
+        if i < 11 and j < 11:
             alignment_matrix[(j,i)] = np.ones(((i+1)*5,(j+1)*5))*0.01
-        elif i < 7 and j == 7:
-            alignment_matrix[(j,i)] = np.ones(((i+1)*5,50))*0.01
-        elif i == 7 and j < 7:
-            alignment_matrix[(j,i)] = np.ones((50, (i+1)*5))*0.01
+        elif i < 11 and j == 11:
+            alignment_matrix[(j,i)] = np.ones(((i+1)*5,120))*0.01
+        elif i == 11 and j < 11:
+            alignment_matrix[(j,i)] = np.ones((120, (i+1)*5))*0.01
         else:
-            alignment_matrix[(j,i)] = np.ones((50,50))*0.01
+            alignment_matrix[(j,i)] = np.ones((120,120))*0.01
             
 lambda_norm = np.zeros((len(eng_dict)))
 count_matrix = np.zeros((len(eng_dict),len(french_dict)))
@@ -61,7 +71,7 @@ for i in lengthsEn:
 #plt.plot(lengthsEn, lengthsPred, 'g.')
 #plt.show()
 
-with open('../FitParams10.txt', 'wb') as fp:
+with open('../FitParams100.txt', 'wb') as fp:
     fp.write(str(fit[0]))
     fp.write('\n')
     fp.write('5')
@@ -81,6 +91,7 @@ for step in range(totalSteps):
 
         for e in eng_words:
             for f in french_words:
+                #print 'Eng: %s Fre: %s'%(e, f)
                 count_matrix[eng_dict[e]][french_dict[f]] += hp.c_of_f_given_e(e, f, eng_words, french_words, eng_dict, french_dict, alignment_matrix, translation_matrix)
 
     # Updating translation_matrix
@@ -138,12 +149,13 @@ for step in range(totalSteps):
                 alignment_temp[hp.alignmentMapping(m_temp, l_temp)][i][j] += hp.c_of_i_given_jmlFE(i, j, m_temp, l_temp, eng_sent[s], french_sent[s], translation_matrix, alignment_matrix, eng_dict, french_dict)/mu_matrix[hp.alignmentMapping(m_temp, l_temp)][j]
         ''' and 0
     alignment_matrix = alignment_temp
-    with open("../translationMatrix10_model2.txt", "w") as fp:
-        for i in range(len(translation_matrix)):
-            for j in range(len(translation_matrix[i])):
-                print >> fp, translation_matrix[i][j],
-            print >> fp
-
+    
+with open("../translationMatrix100_model2.txt", "w") as fp:
+    for i in range(len(translation_matrix)):
+        for j in range(len(translation_matrix[i])):
+            print >> fp, translation_matrix[i][j],
+        print >> fp
 
 print('=====> Finished training, saving data')
+pickle.dump(alignment_matrix, open('../alignmentMatrix100.txt', 'w'))
 print('=====> Saved data. Have a nice day!')
