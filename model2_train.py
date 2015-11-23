@@ -103,12 +103,20 @@ for step in range(totalSteps):
         m_temp = len(french_sent[s])
         l_temp = len(eng_sent[s])
         
+        t_temp = np.array([[translation_matrix[eng_dict[wi]][french_dict[wj]] for wj in french_sent[s]] for wi in eng_sent[s]])
+        a_temp = alignment_matrix[hp.alignmentMapping(m_temp, l_temp)][0:l_temp,0:m_temp] 
+        denom_temp = np.reshape(t_temp.transpose().dot(a_temp).diagonal(), (1,m_temp)).repeat(l_temp, 0)
+        
+        c_ijml = (1.0*a_temp*t_temp)/denom_temp
+        
+        mu_matrix[hp.alignmentMapping(m_temp, l_temp)][0:m_temp] += np.sum(c_ijml, 0)
+        ''' 
         for j in range(m_temp):
             mu_temp = 0
             for i in range(l_temp):
                mu_temp  += hp.c_of_i_given_jmlFE(i, j, m_temp, l_temp, eng_sent[s], french_sent[s], translation_matrix, alignment_matrix, eng_dict, french_dict)
             mu_matrix[hp.alignmentMapping(m_temp, l_temp)][j] += mu_temp
-
+        ''' and 0
     
     # Updating alignment_matrix
     
@@ -116,13 +124,21 @@ for step in range(totalSteps):
     for s in range(len(eng_sent)):
         m_temp = len(french_sent[s])
         l_temp = len(eng_sent[s])
-
+        
+        t_temp = np.array([[translation_matrix[eng_dict[wi]][french_dict[wj]] for wj in french_sent[s]] for wi in eng_sent[s]])
+        a_temp = alignment_matrix[hp.alignmentMapping(m_temp, l_temp)][0:l_temp,0:m_temp] 
+        denom_temp = np.reshape(t_temp.transpose().dot(a_temp).diagonal(), (1,m_temp)).repeat(l_temp, 0)
+        
+        c_ijml = (1.0*a_temp*t_temp)/denom_temp
+      
+        alignment_temp[hp.alignmentMapping(m_temp, l_temp)][0:l_temp,0:m_temp] += c_ijml/np.reshape(mu_matrix[hp.alignmentMapping(m_temp, l_temp)][0:m_temp],(1,m_temp)).repeat(l_temp, 0)
+        '''
         for i in range(l_temp):
             for j in range(m_temp):
                 alignment_temp[hp.alignmentMapping(m_temp, l_temp)][i][j] += hp.c_of_i_given_jmlFE(i, j, m_temp, l_temp, eng_sent[s], french_sent[s], translation_matrix, alignment_matrix, eng_dict, french_dict)/mu_matrix[hp.alignmentMapping(m_temp, l_temp)][j]
-
+        ''' and 0
     alignment_matrix = alignment_temp
-    with open("../translationMatrix10.txt", "w") as fp:
+    with open("../translationMatrix10_model2.txt", "w") as fp:
         for i in range(len(translation_matrix)):
             for j in range(len(translation_matrix[i])):
                 print >> fp, translation_matrix[i][j],
