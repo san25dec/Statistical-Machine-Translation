@@ -113,10 +113,9 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
 with open('../CleanedEnglish1000.txt', 'r') as fp1:
     with open('../CleanedFrench1000.txt', 'r') as fp2:
 
-        frSent = fp2.readline()
-        enSent = fp1.readline()
-        frSent = fp2.readline()
-        enSent = fp1.readline()
+        for c in range(7):
+            frSent = fp2.readline()
+            enSent = fp1.readline()
 
         frSent = re.sub('[\n]', '', frSent)
         enSent = re.sub('[\n]', '', enSent)
