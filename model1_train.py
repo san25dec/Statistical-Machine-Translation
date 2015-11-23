@@ -9,8 +9,8 @@ import numpy.random as nrand
 
 print('*************** Training IBM Model 1 ***************')
 totalSteps = 10
-eng_dict = pickle.load(open("../englishDict.dict",'r'))
-french_dict = pickle.load(open("../frenchDict.dict",'r'))
+eng_dict = pickle.load(open("../englishDict1000.dict",'r'))
+french_dict = pickle.load(open("../frenchDict1000.dict",'r'))
 eng_sent = [];
 french_sent = [];
 
@@ -28,7 +28,7 @@ with open("../CleanedEnglish1000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
-            words.append('xxnullxx')
+            #words.append('xxnullxx')
             eng_sent.append(words)
             lengthsEn.append(len(words))
     
@@ -90,7 +90,7 @@ for step in range(totalSteps):
 
 
 print('=====> Finished training, saving data')
-with open("../translationMatrix.txt", "w") as fp:
+with open("../translationMatrix1000_model1.txt", "w") as fp:
 	for i in range(len(translation_matrix)):
 		for j in range(len(translation_matrix[i])):
 			print >> fp, translation_matrix[i][j],

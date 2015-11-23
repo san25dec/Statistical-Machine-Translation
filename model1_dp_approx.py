@@ -10,8 +10,8 @@ print('************** Testing IBM model 1 ***************')
 tri = pickle.load(open('../trigramEnglish1000.dict', 'r'))
 bi = pickle.load(open('../bigramEnglish1000.dict', 'r'))
 uni = pickle.load(open('../unigramEnglish1000.dict', 'r'))
-englishDict = pickle.load(open('../englishDict.dict', 'r'))
-frenchDict = pickle.load(open('../frenchDict.dict', 'r'))
+englishDict = pickle.load(open('../englishDict1000.dict', 'r'))
+frenchDict = pickle.load(open('../frenchDict1000.dict', 'r'))
 translationMatrix = []
 
 print('=====> Read files')
@@ -27,7 +27,7 @@ with open('../FitParams.txt', 'r') as fp:
 
 print('=====> Reading translation matrix')
 
-with open('../translationMatrix.txt', 'r') as fp:
+with open('../translationMatrix1000_model1.txt', 'r') as fp:
     for i in range(len(englishDict)):     
         line = fp.readline()
         
@@ -82,7 +82,7 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
     
     #### To be run once for creating the top 10 index list
     
-    '''
+    #'''
     
     index_list = []
     for i in range(len(translationMatrix[0])):
@@ -95,15 +95,15 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
         for j in range(20):
             tmplist2.append(tmpindex[j])
         index_list.append(tmplist2)
-    pickle.dump(index_list, open('../top20_index.list', 'wb'))
+    pickle.dump(index_list, open('../top20_index_1000.list', 'wb'))
     
-    ''' and 0
+    #''' and 0
     
     ####
     
     
     
-    top_index = pickle.load(open('../top20_index.list', 'r'))
+    top_index = pickle.load(open('../top20_index_1000.list', 'r'))
            
     for i in range(enLen):
 
@@ -147,36 +147,31 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
         if maxprob<=tmp_prob:    
             maxprob = tmp_prob
             translated_sent = tmp_sent
-    print('** Max prob :')
-    print(maxprob)
+    #print('** Max prob :')
+    #print(maxprob)
     return {'translation':translated_sent, 'probability':maxprob} 
     
-    
-    
-    
-    
-    
-
-
-
 with open('../CleanedEnglish1000.txt', 'r') as fp1:
     with open('../CleanedFrench1000.txt', 'r') as fp2:
 
-        frSent = fp2.readline()
-        enSent = fp1.readline()
-        frSent = fp2.readline()
-        enSent = fp1.readline()
+        for num in range(0,5):
+            frSent = fp2.readline()
+            enSent = fp1.readline()
 
-        frSent = re.sub('[\n]', '', frSent)
-        enSent = re.sub('[\n]', '', enSent)
-        print('=====> Read french Sentence')
-        print('=====> Translating to english')
-        out = translate(frSent, translationMatrix, englishDict, frenchDict, uni, bi, tri, slopeParam, sigmaParam)
-        print('=====> Finished translation')
-        print 'French Sentence: ', frSent
-        print 'English Sentence: ', enSent
-        print 'Translated Sentence: ', out['translation']
-	
-	## Computing bleu score
-	print 'BLUE score of translation', nltk.bleu(out['translation'],enSent,[1])
-	
+            frSent = re.sub('[\n]', '', frSent)
+            enSent = re.sub('[\n]', '', enSent)
+            print('=====> Read french Sentence')
+            print('=====> Translating to english')
+            out = translate(frSent, translationMatrix, englishDict, frenchDict, uni, bi, tri, slopeParam, sigmaParam)
+            print('=====> Finished translation')
+            print('==================================')
+            print 'French Sentence: ', frSent
+            print('----------------------------------')
+            print 'English Sentence: ', enSent
+            print('----------------------------------')
+            print 'Translated Sentence: ', out['translation']
+            print('----------------------------------')
+
+            ## Computing bleu score
+            print 'BLEU score of translation', nltk.bleu(out['translation'],enSent,[1])
+            print('==================================')
