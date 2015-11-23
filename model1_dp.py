@@ -42,9 +42,9 @@ with open('../translationMatrix.txt', 'r') as fp:
 
 def lang_model_scores(word1,word2,uni,bi,flag):
     
-    alpha = 0.1
-    beta = 0.3
-    eps = 0.001
+    alpha = 0.5
+    beta = 0.5
+    eps = 0.0001
     
     if flag == 1:
         if word1 in uni:
