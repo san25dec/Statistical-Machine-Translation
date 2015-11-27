@@ -46,11 +46,11 @@ def createAlignmentMatrix():
             if i < 11 and j < 11:
                 alignment_matrix[(j,i)] = np.zeros(((i+1)*5,(j+1)*5))
             elif i < 11 and j == 11:
-                alignment_matrix[(j,i)] = np.zeros(((i+1)*5,120))
+                alignment_matrix[(j,i)] = np.zeros(((i+1)*5,140))
             elif i == 11 and j < 11:
-                alignment_matrix[(j,i)] = np.zeros((120,(i+1)*5))
+                alignment_matrix[(j,i)] = np.zeros((140,(i+1)*5))
             else:
-                alignment_matrix[(j,i)] = np.zeros((120,120))
+                alignment_matrix[(j,i)] = np.zeros((140,140))
 
     return alignment_matrix
 
@@ -63,7 +63,7 @@ def createMuMatrix():
             if j < 11:
                 mu_matrix[(j,i)] = np.zeros((j+1)*5)
             else:
-                mu_matrix[(j,i)] = np.zeros(120)
+                mu_matrix[(j,i)] = np.zeros(140)
     
     return mu_matrix
 

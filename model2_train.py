@@ -10,22 +10,22 @@ import model2_helpers as hp
 
 print('*************** Training IBM Model 2 ***************')
 totalSteps = 10
-eng_dict = pickle.load(open("../englishDict100.dict",'r'))
-french_dict = pickle.load(open("../frenchDict100.dict",'r'))
+eng_dict = pickle.load(open("../englishDict1000.dict",'r'))
+french_dict = pickle.load(open("../frenchDict1000.dict",'r'))
 eng_sent = [];
 french_sent = [];
 
 lengthsFr = [];
 lengthsEn = [];
 
-with open("../CleanedFrench100.txt", "r") as fp:
+with open("../CleanedFrench1000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
             french_sent.append(words)
             lengthsFr.append(len(words))
 
-with open("../CleanedEnglish100.txt", "r") as fp:
+with open("../CleanedEnglish1000.txt", "r") as fp:
 	for x in fp:
 	    xTemp = re.sub('[\n]', '', x)
             words = xTemp.split()
@@ -53,11 +53,11 @@ for i in range(12):
         if i < 11 and j < 11:
             alignment_matrix[(j,i)] = np.ones(((i+1)*5,(j+1)*5))*0.01
         elif i < 11 and j == 11:
-            alignment_matrix[(j,i)] = np.ones(((i+1)*5,120))*0.01
+            alignment_matrix[(j,i)] = np.ones(((i+1)*5,140))*0.01
         elif i == 11 and j < 11:
-            alignment_matrix[(j,i)] = np.ones((120, (i+1)*5))*0.01
+            alignment_matrix[(j,i)] = np.ones((140, (i+1)*5))*0.01
         else:
-            alignment_matrix[(j,i)] = np.ones((120,120))*0.01
+            alignment_matrix[(j,i)] = np.ones((140,140))*0.01
             
 lambda_norm = np.zeros((len(eng_dict)))
 count_matrix = np.zeros((len(eng_dict),len(french_dict)))
@@ -71,10 +71,10 @@ for i in lengthsEn:
 #plt.plot(lengthsEn, lengthsPred, 'g.')
 #plt.show()
 
-with open('../FitParams100.txt', 'wb') as fp:
+with open('../FitParams1000_model2.txt', 'wb') as fp:
     fp.write(str(fit[0]))
     fp.write('\n')
-    fp.write('5')
+    fp.write('2')
 
 print(' =====> Obtained the length distribution')
 
@@ -150,7 +150,7 @@ for step in range(totalSteps):
         ''' and 0
     alignment_matrix = alignment_temp
     
-with open("../translationMatrix100_model2.txt", "w") as fp:
+with open("../translationMatrix1000_model2.txt", "w") as fp:
     for i in range(len(translation_matrix)):
         for j in range(len(translation_matrix[i])):
             print >> fp, translation_matrix[i][j],

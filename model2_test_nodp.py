@@ -15,7 +15,7 @@ englishDict = pickle.load(open('../englishDict100.dict', 'r'))
 frenchDict = pickle.load(open('../frenchDict100.dict', 'r'))
 alignmentMatrix = pickle.load(open('../alignmentMatrix100_50iter.txt', 'r'))
 
-translationMatrix = []
+#translationMatrix = []
 
 print('=====> Read files')
 
@@ -30,6 +30,8 @@ with open('../FitParams100.txt', 'r') as fp:
 
 print('=====> Reading translation matrix')
 
+translationMatrix = np.zeros((len(englishDict), len(frenchDict)))
+
 with open('../translationMatrix100_model2_50iter.txt', 'r') as fp:
     for i in range(len(englishDict)):     
         line = fp.readline()
@@ -37,9 +39,10 @@ with open('../translationMatrix100_model2_50iter.txt', 'r') as fp:
         #pdb.set_trace()
         line = re.sub('[\n]', '', line)
         vals = line.split()
-        
+        for j in range(len(frenchDict)):
+            translationMatrix[i,j] = float(vals[j])
         #translationMatrix.append([float(j) for j in vals])
-        translationMatrix.append(map(float, vals))
+        #translationMatrix.append(map(float, vals))
 
 #pdb.set_trace()
 
@@ -68,8 +71,9 @@ def lang_model_scores(word1,word2,uni,bi,flag):
 def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri, slopeParam, sigmaParam):
     
     frSent = sentence.split()
-    enLen = int(nrand.normal(len(frSent)/slopeParam, sigmaParam))
-    
+    #enLen = int(nrand.normal(len(frSent)/slopeParam, sigmaParam))
+    enLen = len(frSent)
+
     enSent = []
     
     dp_mat = []
@@ -88,17 +92,17 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
     #'''
     
     index_list = []
-    for i in range(len(translationMatrix[0])):
+    for i in range(len(frenchDict)):
         tmplist = []
         tmpindex = []
-        for j in range(len(translationMatrix)):
+        for j in range(len(englishDict)):
             tmplist.append(translationMatrix[j][i])
         tmpindex = sorted(range(len(tmplist)),key=lambda k:tmplist[k],reverse=True)
         tmplist2 = []
         for j in range(20):
             tmplist2.append(tmpindex[j])
         index_list.append(tmplist2)
-    pickle.dump(index_list, open('../top20_index_100_dp.list', 'wb'))
+    pickle.dump(index_list, open('../top20_index_100.list', 'wb'))
     
     #''' and 0
     
@@ -106,25 +110,26 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
     
     
     
-    top_index = pickle.load(open('../top20_index_100_dp.list', 'r'))
+    top_index = pickle.load(open('../top20_index_100.list', 'r'))
     
     ## Alignment model
     mTemp = len(frSent)
     lTemp = enLen
-
     alignmentMatrix_curr = alignmentMatrix[hp.alignmentMapping(mTemp, lTemp)][0:lTemp, 0:mTemp]
-
+    translatedSentence = ''
     for i in range(enLen):
-
-        ai = np.argmax(alignmentMatrix_curr[i, 0:mTemp])#int(nrand.uniform(0, len(frSent)))
+    
+        ai = i#np.argmax(alignmentMatrix_curr[i, 0:mTemp])#int(nrand.uniform(0, len(frSent)))
         currFr = frSent[ai]
         currFrInd = frenchDict[currFr]
-
-        maxProb = 0
-        maxInd = 0 
-        template_entry = []
+        currEnInd = np.argmax(translationMatrix[0:len(translationMatrix[0]), currFrInd])
+        translatedSentence += ' ' + inv_eng[currEnInd]
+        maxprob = translationMatrix[currEnInd][currFrInd]
+        #maxProb = 0
+        #maxInd = 0 
+        #template_entry = []
         
-	
+        '''
 	if i==0:
 	    for j in range(len(translationMatrix)):
 	        template_entry.append((inv_eng[j],translationMatrix[j][currFrInd]*lang_model_scores(inv_eng[j],'',uni,bi,1)))
@@ -140,11 +145,12 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
                         maxword = inv_eng[currEngInd]
                 template_entry.append((maxword,maxval))
             dp_mat.append(template_entry)
+        ''' and 0
+    #translated_sent = ''  
+    #maxprob = 0
     
-    translated_sent = ''  
-    maxprob = 0        
     #print(dp_mat)
-    
+    '''
     for i in range(len(translationMatrix)):
         tmp_sent = ''
         tmp_prob = 1
@@ -158,10 +164,11 @@ def translate(sentence, translationMatrix, englishDict, frenchDict, uni, bi, tri
             translated_sent = tmp_sent
     #print('** Max prob :')
     #print(maxprob)
-    return {'translation':translated_sent, 'probability':maxprob} 
+    ''' and 0
+    return {'translation':translatedSentence, 'probability':maxprob} 
     
-with open('../CleanedEnglish1000.txt', 'r') as fp1:
-    with open('../CleanedFrench1000.txt', 'r') as fp2:
+with open('../CleanedEnglish100.txt', 'r') as fp1:
+    with open('../CleanedFrench100.txt', 'r') as fp2:
 
         for num in range(0,5):
             frSent = fp2.readline()
